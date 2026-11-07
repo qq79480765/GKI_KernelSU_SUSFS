@@ -16,11 +16,13 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        KC="$(find "$GITHUB_WORKSPACE/kernel" -path '*/drivers/kernelsu/Kconfig' -not -path '*/.git/*' 2>/dev/null | head -n1 || true)"
+        KC="$(find -L "$GITHUB_WORKSPACE/kernel" -maxdepth 8 -path '*/drivers/kernelsu/Kconfig' -not -path '*/.git/*' 2>/dev/null | head -n1 || true)"
         if [ -z "$KC" ]; then
           echo "[-] no drivers/kernelsu/Kconfig (non-KSU flavor); skipping"
           exit 0
         fi
+        echo "[*] Kconfig at: $KC -> $(readlink -f "$KC")"
+        KC="$(readlink -f "$KC")"
         if grep -q "config KSU_SUSFS_PRIORITY_UID_FILTER" "$KC"; then
           echo "[*] $KC already declares KSU_SUSFS_PRIORITY_UID_FILTER"
         else
