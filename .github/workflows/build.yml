@@ -76,6 +76,11 @@ on:
         required: false
         type: string
         default: "4k"
+      enable_kpm:
+        description: "Enable SukiSU-Ultra KPM (CONFIG_KPM=y); no-op for other root flavors"
+        required: false
+        type: boolean
+        default: false
       stock_config_artifact:
         description: "Artifact name with prefetched stock configs (stock_<kver>[_16k].config)"
         required: false
@@ -244,6 +249,17 @@ jobs:
         with:
           flavor: ${{ inputs.root_flavor }}
           commit: ${{ inputs.root_commit }}
+
+      - name: Enable KPM for SukiSU-Ultra
+        # SukiSU-Ultra is the only root flavor that still ships the KPM
+        # (Kernel Patch Module) framework; BakaSU removed it. CONFIG_KPM is
+        # `depends on KSU && 64BIT` and selects KALLSYMS/KALLSYMS_ALL, so it
+        # can only be flipped after root-setup wrote CONFIG_KSU=y.
+        if: inputs.root_flavor == 'sukisu-ultra' && inputs.enable_kpm
+        uses: ./.github/actions/set-kernel-config
+        with:
+          config_list: |
+            CONFIG_KPM=y
 
       - name: Mark No Root build metadata
         if: inputs.root_flavor == 'none'

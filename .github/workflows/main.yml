@@ -78,6 +78,10 @@ on:
         description: "SUSFS"
         type: boolean
         default: true
+      enable_kpm:
+        description: "SukiSU-Ultra KPM (CONFIG_KPM=y, SukiSU-Ultra only)"
+        type: boolean
+        default: false
       use_nomount:
         description: "NoMount"
         type: boolean
@@ -679,6 +683,7 @@ jobs:
       os_patch_level: ${{ inputs.os_patch_level || 'All' }}
       allow_version_mismatch: ${{ inputs.allow_version_mismatch || false }}
       page_size: ${{ inputs.page_size || '4k' }}
+      enable_kpm: ${{ inputs.enable_kpm || false }}
     secrets: inherit
 
   build-android13-5-10:
