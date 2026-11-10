@@ -7,6 +7,10 @@ name: KPM Kernel Build
 # a push that touches the trigger file starts the exact same build using plain
 # git credentials, which is how this fork gets driven from the workstation.
 on:
+  # repository_dispatch only needs `repo` scope, unlike workflow_dispatch which
+  # additionally requires the `workflow` scope on the caller's token.
+  repository_dispatch:
+    types: [kpm-build]
   workflow_dispatch:
   push:
     branches: [main]
